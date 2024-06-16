@@ -2,6 +2,7 @@ package pl.lodz.uni;
 
 import javax.swing.*;
 
+import org.w3c.dom.ranges.Range;
 import pl.lodz.uni.core.SystemUsageService;
 import pl.lodz.uni.core.SystemUsageServiceImpl;
 import pl.lodz.uni.core.UpdateController;

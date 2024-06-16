@@ -48,8 +48,10 @@ public class RangePanel extends JPanel implements ProgressPresenter {
         gbcProgressBar.gridx = 0;
         gbcProgressBar.gridy = 1;
         add(progressBar, gbcProgressBar);
-        setMinimumSize(new Dimension(200, 80));
-        //setMaximumSize(new Dimension(200, 80));
+
+        setPreferredSize(new Dimension(240, 80));
+        setMinimumSize(new Dimension(240, 80));
+        setMaximumSize(new Dimension(240, 80));
     }
 
     @Override

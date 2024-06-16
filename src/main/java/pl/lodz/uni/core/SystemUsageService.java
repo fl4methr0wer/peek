@@ -1,4 +1,4 @@
-package pl.lodz.uni;
+package pl.lodz.uni.core;
 
 public interface SystemUsageService {
     double getProcessorUsageInPercents();

@@ -1,5 +1,7 @@
 package pl.lodz.uni;
 
+import pl.lodz.uni.core.SystemUsageServiceImpl;
+
 public class Main {
     public static void main(String[] args) {
         SystemUsageServiceImpl service = new SystemUsageServiceImpl();

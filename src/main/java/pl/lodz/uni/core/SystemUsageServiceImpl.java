@@ -1,4 +1,4 @@
-package pl.lodz.uni;
+package pl.lodz.uni.core;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -6,7 +6,6 @@ import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.Sensors;
 import oshi.util.Util;
-import pl.lodz.uni.SystemUsageService;
 
 public class SystemUsageServiceImpl implements SystemUsageService {
 

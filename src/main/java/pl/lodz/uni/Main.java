@@ -1,6 +1,9 @@
 package pl.lodz.uni;
 
 import pl.lodz.uni.core.SystemUsageServiceImpl;
+import pl.lodz.uni.ui.Window;
+
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,5 +16,7 @@ public class Main {
         for (int speed : service.getFansSpeedInRPM()) {
             System.out.print(speed + " RPM ");
         }
+
+        JFrame widow = new Window("peek");
     }
 }

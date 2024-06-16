@@ -6,5 +6,7 @@ public interface SystemUsageService {
     double getRamInstalledInGigabytes();
     double getRamUsedInGigabytes();
     int[] getFansSpeedInRPM();
+    int getAmountOfFans();
 }
+
 

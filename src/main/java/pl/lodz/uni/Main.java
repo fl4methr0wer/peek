@@ -1,10 +1,11 @@
 package pl.lodz.uni;
 
-
-import pl.lodz.uni.ui.RangePanel;
-
 import javax.swing.*;
-import java.awt.*;
+
+import pl.lodz.uni.core.SystemUsageService;
+import pl.lodz.uni.core.SystemUsageServiceImpl;
+import pl.lodz.uni.core.UpdateController;
+import pl.lodz.uni.ui.RangePanel;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,28 +20,8 @@ public class Main {
 
             // Create and add RangePanel instances
             RangePanel cpuPanel = new RangePanel();
-            cpuPanel.setName("CPU:");
-            cpuPanel.setValue("10.0 %");
-            cpuPanel.setProgress(25); // Set progress (example value)
+            cpuPanel.setName("CPU: ");
             mainPanel.add(cpuPanel);
-
-            RangePanel memoryPanel = new RangePanel();
-            memoryPanel.setName("Memory:");
-            memoryPanel.setValue("10 MB");
-            memoryPanel.setProgress(50); // Set progress (example value)
-            mainPanel.add(memoryPanel);
-
-            RangePanel diskPanel = new RangePanel();
-            diskPanel.setName("Disk:");
-            diskPanel.setValue("50 GB");
-            diskPanel.setProgress(75); // Set progress (example value)
-            mainPanel.add(diskPanel);
-
-            RangePanel networkPanel = new RangePanel();
-            networkPanel.setName("Network:");
-            networkPanel.setValue("1.5 Mbps");
-            networkPanel.setProgress(100); // Set progress (example value)
-            mainPanel.add(networkPanel);
 
             // Add the main panel to a scroll pane for scrolling
             JScrollPane scrollPane = new JScrollPane(mainPanel);
@@ -50,6 +31,15 @@ public class Main {
             // Adjust frame size and make it visible
             frame.pack();
             frame.setVisible(true);
+
+            // Create the SystemUsageService implementation
+            SystemUsageService systemUsageService = new SystemUsageServiceImpl();
+
+            // Create the UpdateService
+            UpdateController updateController = new UpdateController(systemUsageService);
+
+            // Use the UpdateService to update the CPU panel periodically
+            updateController.notifyCPUUsage(1000, cpuPanel);
         });
     }
 }

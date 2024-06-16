@@ -54,4 +54,11 @@ public class SystemUsageServiceImpl implements SystemUsageService {
         int[] fanSpeeds = sensors.getFanSpeeds();
         return fanSpeeds != null ? fanSpeeds : new int[0]; // Return an empty array if fan speeds are not available
     }
+
+    @Override
+    public int getAmountOfFans() {
+        Sensors sensors = hardware.getSensors();
+        int[] fanSpeeds = sensors.getFanSpeeds();
+        return fanSpeeds != null ? fanSpeeds.length : 0;
+    }
 }

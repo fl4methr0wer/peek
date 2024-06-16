@@ -18,19 +18,11 @@ public class Main {
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-            // Create and add RangePanel instances
-            RangePanel cpuPanel = new RangePanel();
-            cpuPanel.setName("CPU: ");
-            mainPanel.add(cpuPanel);
-
             // Add the main panel to a scroll pane for scrolling
             JScrollPane scrollPane = new JScrollPane(mainPanel);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             frame.add(scrollPane);
 
-            // Adjust frame size and make it visible
-            frame.pack();
-            frame.setVisible(true);
 
             // Create the SystemUsageService implementation
             SystemUsageService systemUsageService = new SystemUsageServiceImpl();
@@ -38,8 +30,22 @@ public class Main {
             // Create the UpdateService
             UpdateController updateController = new UpdateController(systemUsageService);
 
+            // Create and add RangePanel instances
+            RangePanel cpuPanel = new RangePanel();
+            cpuPanel.setName("CPU: ");
+            mainPanel.add(cpuPanel);
             // Use the UpdateService to update the CPU panel periodically
             updateController.notifyCPUUsage(1000, cpuPanel);
+
+            RangePanel memoryPanel = new RangePanel();
+            memoryPanel.setName("RAM: ");
+            mainPanel.add(memoryPanel);
+            updateController.notifyMemoryUsage(1000, memoryPanel);
+
+
+            // Adjust frame size and make it visible
+            frame.pack();
+            frame.setVisible(true);
         });
     }
 }

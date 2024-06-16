@@ -1,9 +1,11 @@
 package pl.lodz.uni.ui;
 
+import pl.lodz.uni.core.ProgressPresenter;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class RangePanel extends JPanel {
+public class RangePanel extends JPanel implements ProgressPresenter {
 
     private JLabel nameLabel;
     private JLabel valueLabel;
@@ -48,14 +50,17 @@ public class RangePanel extends JPanel {
         add(progressBar, gbcProgressBar);
     }
 
+    @Override
     public void setName(String name) {
         nameLabel.setText(name);
     }
 
+    @Override
     public void setValue(String value) {
         valueLabel.setText(value);
     }
 
+    @Override
     public void setProgress(int progress) {
         progressBar.setValue(progress);
     }

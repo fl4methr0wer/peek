@@ -2,24 +2,18 @@ package pl.lodz.uni;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.Timer;
 
 import pl.lodz.uni.core.*;
-import pl.lodz.uni.core.controller.BatteryUpdateController;
-import pl.lodz.uni.core.controller.FanUpdateController;
-import pl.lodz.uni.core.controller.MemoryUpdateController;
-import pl.lodz.uni.core.controller.ProcessorUpdateController;
+import pl.lodz.uni.core.controller.*;
 import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.ui.RangePanel;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class Main {
     private static JFrame window;
@@ -28,7 +22,9 @@ public class Main {
     private static IFanService fanService;
     private static IMemoryService memoryService;
     private static IBatteryService batteryService;
-    private static List<Reporting> logReporters = new ArrayList<>();
+    private static List<Reporter> logReporters = new ArrayList<>();
+    private static NotifierAggregate notifierAggregate = new NotifierAggregate();
+    private static Timer timer;
 
     private static void configureWindow() {
         window = new JFrame("System Usage");
@@ -45,16 +41,16 @@ public class Main {
 
     private static void configureServices() {
         processorService = new ProcessorService();
-        logReporters.add((Reporting) processorService);
+        logReporters.add((Reporter) processorService);
 
         fanService = new FanService();
-        logReporters.add((Reporting) fanService);
+        logReporters.add((Reporter) fanService);
 
         memoryService = new MemoryService();
-        logReporters.add((Reporting) memoryService);
+        logReporters.add((Reporter) memoryService);
 
         batteryService = new BatteryService();
-        logReporters.add((Reporting) batteryService);
+        logReporters.add((Reporter) batteryService);
     }
 
     public static void main(String[] args) {
@@ -78,8 +74,11 @@ public class Main {
             MemoryUpdateController memoryUpdateController = new MemoryUpdateController(memoryService);
 
             RangePanel memoryPanel = new RangePanel();
+            memoryPanel.setName("RAM");
             mainPanel.add(memoryPanel);
-            memoryUpdateController.notifyMemoryUsage(1000, memoryPanel);
+
+            memoryUpdateController.registerProgressPresenter(memoryPanel);
+            notifierAggregate.add(memoryUpdateController);
 
             // FANS
             FanUpdateController fanUpdateController = new FanUpdateController(fanService);
@@ -88,10 +87,12 @@ public class Main {
             List<ProgressPresenter> fanPanels = new ArrayList<>();
             for (int i = 0; i < anountOfFans; i++) {
                 RangePanel fanPanel = new RangePanel();
+                fanUpdateController.registerProgressPresenter(fanPanel);
                 fanPanels.add(fanPanel);
             }
 
-            fanUpdateController.notifyFanRPM(1000, fanPanels);
+            notifierAggregate.add(fanUpdateController);
+
             for (ProgressPresenter fanPresenter : fanPanels) {
                 mainPanel.add((RangePanel) fanPresenter);
             }
@@ -100,13 +101,18 @@ public class Main {
             BatteryUpdateController batteryController = new BatteryUpdateController(batteryService);
             ProgressPresenter batteryPanel = new RangePanel();
             mainPanel.add((RangePanel) batteryPanel);
-            batteryController.notify(1000, batteryPanel);
+            notifierAggregate.add(batteryController);
+
+            batteryController.registerProgressPresenter(batteryPanel);
+            notifierAggregate.add(batteryController);
 
             // Save reports button
             JButton saveButton = new JButton("Save Reports");
             saveButton.addActionListener(Main::handleSaveReports);
             mainPanel.add(saveButton);
 
+            timer = new Timer(1000, (e) -> notifierAggregate.notifyAllPresenters());
+            timer.start();
 
             window.pack();
             window.setVisible(true);
@@ -114,6 +120,7 @@ public class Main {
     }
 
     private static void handleSaveReports(ActionEvent e) {
+        timer.stop();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Report");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -123,8 +130,11 @@ public class Main {
         fileChooser.addChoosableFileFilter(filter);
 
         int userSelection = fileChooser.showSaveDialog(window);
-        if (userSelection != JFileChooser.APPROVE_OPTION)
+        if (userSelection != JFileChooser.APPROVE_OPTION) {
+            timer.restart();
             return;
+        }
+
         File fileToSave = fileChooser.getSelectedFile();
         String filePath = fileToSave.getAbsolutePath();
 
@@ -136,5 +146,6 @@ public class Main {
                 "Report saved to " + filePath,
                 "Reports saved",
                 JOptionPane.INFORMATION_MESSAGE);
+        timer.restart();
     }
 }

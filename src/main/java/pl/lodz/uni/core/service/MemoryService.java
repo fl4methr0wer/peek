@@ -3,9 +3,9 @@ package pl.lodz.uni.core.service;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
-import pl.lodz.uni.core.Reporting;
+import pl.lodz.uni.core.Reporter;
 
-public class MemoryService implements IMemoryService, Reporting {
+public class MemoryService implements IMemoryService, Reporter {
 
     private final SystemInfo systemInfo;
     private final HardwareAbstractionLayer hardware;

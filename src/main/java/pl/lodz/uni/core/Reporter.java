@@ -1,5 +1,5 @@
 package pl.lodz.uni.core;
 
-public interface Reporting {
+public interface Reporter {
     String report();
 }

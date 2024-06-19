@@ -3,9 +3,9 @@ package pl.lodz.uni.core.service;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.Sensors;
-import pl.lodz.uni.core.Reporting;
+import pl.lodz.uni.core.Reporter;
 
-public class FanService implements IFanService, Reporting {
+public class FanService implements IFanService, Reporter {
 
     private final SystemInfo systemInfo;
     private final HardwareAbstractionLayer hardware;

@@ -15,14 +15,14 @@ public class FileReportLogger implements ReportLogger {
     }
 
     @Override
-    public void accept(List<Reporting> reporters) {
+    public void accept(List<Reporter> reporters) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("System status report");
             writer.newLine();
             writer.write(LocalDateTime.now().toString());
             writer.newLine();
             writer.newLine();
-            for (Reporting reporter : reporters) {
+            for (Reporter reporter : reporters) {
                 writer.write(reporter.report());
                 writer.newLine();
             }

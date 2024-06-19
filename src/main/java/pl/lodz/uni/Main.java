@@ -3,8 +3,7 @@ package pl.lodz.uni;
 import javax.swing.*;
 
 import pl.lodz.uni.core.ProgressPresenter;
-import pl.lodz.uni.core.SystemUsageService;
-import pl.lodz.uni.core.SystemUsageServiceImpl;
+import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.core.UpdateController;
 import pl.lodz.uni.ui.RangePanel;
 import java.util.ArrayList;
@@ -27,10 +26,12 @@ public class Main {
 
 
             // Create the SystemUsageService implementation
-            SystemUsageService systemUsageService = new SystemUsageServiceImpl();
+            IProcessorService processorService = new ProcessorService();
+            IFanService IFanService = new FanService();
+            IMemoryService memoryService = new MemoryService();
 
             // Create the UpdateService
-            UpdateController updateController = new UpdateController(systemUsageService);
+            UpdateController updateController = new UpdateController(processorService, IFanService, memoryService);
 
             // Create and add RangePanel instances
             RangePanel cpuPanel = new RangePanel();
@@ -48,7 +49,7 @@ public class Main {
             mainPanel.add(memoryPanel);
             updateController.notifyMemoryUsage(1000, memoryPanel);
 
-            int anountOfFans = systemUsageService.getAmountOfFans();
+            int anountOfFans = IFanService.getAmountOfFans();
             List<ProgressPresenter> fanPanels = new ArrayList<>();
             for (int i = 0; i < anountOfFans; i++) {
                 RangePanel fanPanel = new RangePanel();

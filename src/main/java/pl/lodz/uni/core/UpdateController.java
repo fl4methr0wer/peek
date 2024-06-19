@@ -1,21 +1,27 @@
 package pl.lodz.uni.core;
 
+import pl.lodz.uni.core.service.IFanService;
+import pl.lodz.uni.core.service.IMemoryService;
+import pl.lodz.uni.core.service.IProcessorService;
 import javax.swing.*;
-import java.util.Collection;
 import java.util.List;
 
 public class UpdateController {
 
-    private final SystemUsageService service;
+    private final IProcessorService processorService;
+    private final IFanService IFanService;
+    private final IMemoryService IMemoryService;
 
-    public UpdateController(SystemUsageService service) {
-        this.service = service;
+    public UpdateController(IProcessorService processorService, IFanService IFanService, IMemoryService IMemoryService) {
+        this.processorService = processorService;
+        this.IFanService = IFanService;
+        this.IMemoryService = IMemoryService;
     }
 
     public void notifyCPUUsage(int intervalMilliseconds, ProgressPresenter presenter) {
         presenter.setName("CPU");
         Timer timer = new Timer(intervalMilliseconds, e -> {
-            double percents = service.getProcessorUsageInPercents();
+            double percents = processorService.getProcessorUsageInPercents();
             String percentsStringRepresentation = String.format("%.2f %%", percents);
             presenter.setValue(percentsStringRepresentation);
             presenter.setProgress((int) percents);
@@ -26,7 +32,7 @@ public class UpdateController {
     public void notifyCPUTemperature(int intervalMilliseconds, ProgressPresenter presenter) {
         presenter.setName("CPU temperature");
         Timer timer = new Timer(intervalMilliseconds, e -> {
-            double temp = service.getProcessorTemp();
+            double temp = processorService.getProcessorTemp();
             presenter.setValue(String.format("%.2f C", temp));
             presenter.setProgress((int) temp);
         });
@@ -36,7 +42,7 @@ public class UpdateController {
     public void notifyMemoryUsage(int intervalMilliseconds, ProgressPresenter presenter) {
         presenter.setName("RAM");
         Timer timer = new Timer(intervalMilliseconds, e -> {
-            double percents = service.getRamUsageInPercents();
+            double percents = IMemoryService.getRamUsageInPercents();
             String percentsStringRepresentation = String.format("%.2f %%", percents);
             presenter.setValue(percentsStringRepresentation);
             presenter.setProgress((int) percents);
@@ -47,7 +53,7 @@ public class UpdateController {
     public void notifyFanRPM(int intervalMilliseconds, List<ProgressPresenter> presenters) {
         int maxFanRPM = 6000;
         Timer timer = new Timer(intervalMilliseconds, e -> {
-            int[] fansSpeeds = service.getFansSpeedInRPM();
+            int[] fansSpeeds = IFanService.getFansSpeedInRPM();
             for (int i = 0; i < fansSpeeds.length && i < presenters.size(); i++) {
                 ProgressPresenter presenter = presenters.get(i);
                 int progress = (int) ((fansSpeeds[i] / (double) maxFanRPM) * 100); // Scale to 0-100

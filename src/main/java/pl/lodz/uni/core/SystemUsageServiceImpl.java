@@ -27,6 +27,11 @@ public class SystemUsageServiceImpl implements SystemUsageService {
     }
 
     @Override
+    public double getProcessorTemp() {
+        return hardware.getSensors().getCpuTemperature();
+    }
+
+    @Override
     public double getRamUsageInPercents() {
         GlobalMemory memory = hardware.getMemory();
         long totalMemory = memory.getTotal();

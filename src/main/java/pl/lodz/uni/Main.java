@@ -2,18 +2,19 @@ package pl.lodz.uni;
 
 import javax.swing.*;
 
-import org.w3c.dom.ranges.Range;
+import pl.lodz.uni.core.ProgressPresenter;
 import pl.lodz.uni.core.SystemUsageService;
 import pl.lodz.uni.core.SystemUsageServiceImpl;
 import pl.lodz.uni.core.UpdateController;
 import pl.lodz.uni.ui.RangePanel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Create the main window frame
-            JFrame frame = new JFrame("System Usage");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JFrame window = new JFrame("System Usage");
+            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             // Create a panel to hold the RangePanels vertically
             JPanel mainPanel = new JPanel();
@@ -22,7 +23,7 @@ public class Main {
             // Add the main panel to a scroll pane for scrolling
             JScrollPane scrollPane = new JScrollPane(mainPanel);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            frame.add(scrollPane);
+            window.add(scrollPane);
 
 
             // Create the SystemUsageService implementation
@@ -38,15 +39,31 @@ public class Main {
             // Use the UpdateService to update the CPU panel periodically
             updateController.notifyCPUUsage(1000, cpuPanel);
 
+            RangePanel cpuTemp = new RangePanel();
+            mainPanel.add(cpuTemp);
+            updateController.notifyCPUTemperature(1000, cpuTemp);
+
             RangePanel memoryPanel = new RangePanel();
             memoryPanel.setName("RAM: ");
             mainPanel.add(memoryPanel);
             updateController.notifyMemoryUsage(1000, memoryPanel);
 
+            int anountOfFans = systemUsageService.getAmountOfFans();
+            List<ProgressPresenter> fanPanels = new ArrayList<>();
+            for (int i = 0; i < anountOfFans; i++) {
+                RangePanel fanPanel = new RangePanel();
+                fanPanel.setName("Fan " +(i+1));
+                fanPanels.add(fanPanel);
+            }
 
-            // Adjust frame size and make it visible
-            frame.pack();
-            frame.setVisible(true);
+            updateController.notifyFanRPM(1000, fanPanels);
+            for (ProgressPresenter fanPresenter : fanPanels) {
+                mainPanel.add((RangePanel) fanPresenter);
+            }
+
+            // Adjust window size and make it visible
+            window.pack();
+            window.setVisible(true);
         });
     }
 }

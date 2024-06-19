@@ -1,5 +1,6 @@
-package pl.lodz.uni.core;
+package pl.lodz.uni.core.controller;
 
+import pl.lodz.uni.core.ProgressPresenter;
 import pl.lodz.uni.core.service.IBatteryService;
 
 import javax.swing.*;

@@ -3,8 +3,9 @@ package pl.lodz.uni.core.service;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.Sensors;
+import pl.lodz.uni.core.Reporting;
 
-public class FanService implements IFanService {
+public class FanService implements IFanService, Reporting {
 
     private final SystemInfo systemInfo;
     private final HardwareAbstractionLayer hardware;
@@ -28,4 +29,16 @@ public class FanService implements IFanService {
         return fanSpeeds != null ? fanSpeeds.length : 0;
     }
 
+    @Override
+    public String report() {
+        int amountOfFans = getAmountOfFans();
+        int[] fanSpeeds = getFansSpeedInRPM();
+
+        StringBuilder reportBuilder = new StringBuilder();
+        reportBuilder.append("Fan Service Report:\n");
+        for (int i = 0; i < amountOfFans; i++) {
+            reportBuilder.append("Fan ").append(i + 1).append(" Speed: ").append(fanSpeeds[i]).append(" RPM\n");
+        }
+        return reportBuilder.toString();
+    }
 }

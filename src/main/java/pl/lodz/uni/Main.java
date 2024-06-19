@@ -1,12 +1,25 @@
 package pl.lodz.uni;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import pl.lodz.uni.core.*;
+import pl.lodz.uni.core.controller.BatteryUpdateController;
+import pl.lodz.uni.core.controller.FanUpdateController;
+import pl.lodz.uni.core.controller.MemoryUpdateController;
+import pl.lodz.uni.core.controller.ProcessorUpdateController;
 import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.ui.RangePanel;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Main {
     private static JFrame window;
@@ -15,6 +28,7 @@ public class Main {
     private static IFanService fanService;
     private static IMemoryService memoryService;
     private static IBatteryService batteryService;
+    private static List<Reporting> logReporters = new ArrayList<>();
 
     private static void configureWindow() {
         window = new JFrame("System Usage");
@@ -31,9 +45,16 @@ public class Main {
 
     private static void configureServices() {
         processorService = new ProcessorService();
+        logReporters.add((Reporting) processorService);
+
         fanService = new FanService();
+        logReporters.add((Reporting) fanService);
+
         memoryService = new MemoryService();
+        logReporters.add((Reporting) memoryService);
+
         batteryService = new BatteryService();
+        logReporters.add((Reporting) batteryService);
     }
 
     public static void main(String[] args) {
@@ -81,9 +102,39 @@ public class Main {
             mainPanel.add((RangePanel) batteryPanel);
             batteryController.notify(1000, batteryPanel);
 
+            // Save reports button
+            JButton saveButton = new JButton("Save Reports");
+            saveButton.addActionListener(Main::handleSaveReports);
+            mainPanel.add(saveButton);
+
 
             window.pack();
             window.setVisible(true);
         });
+    }
+
+    private static void handleSaveReports(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Report");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+        fileChooser.addChoosableFileFilter(filter);
+
+        int userSelection = fileChooser.showSaveDialog(window);
+        if (userSelection != JFileChooser.APPROVE_OPTION)
+            return;
+        File fileToSave = fileChooser.getSelectedFile();
+        String filePath = fileToSave.getAbsolutePath();
+
+        FileReportLogger reportLogger = new FileReportLogger(filePath);
+        reportLogger.accept(logReporters);
+
+        // Optionally show a message dialog after saving
+        JOptionPane.showMessageDialog(window,
+                "Report saved to " + filePath,
+                "Reports saved",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }

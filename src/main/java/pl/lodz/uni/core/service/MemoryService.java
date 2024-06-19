@@ -3,8 +3,9 @@ package pl.lodz.uni.core.service;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
+import pl.lodz.uni.core.Reporting;
 
-public class MemoryService implements IMemoryService {
+public class MemoryService implements IMemoryService, Reporting {
 
     private final SystemInfo systemInfo;
     private final HardwareAbstractionLayer hardware;
@@ -34,5 +35,19 @@ public class MemoryService implements IMemoryService {
         long totalMemory = memory.getTotal();
         long availableMemory = memory.getAvailable();
         return (double) (totalMemory - availableMemory) / (1024 * 1024 * 1024);
+    }
+
+    @Override
+    public String report() {
+        GlobalMemory memory = hardware.getMemory();
+
+        StringBuilder reportBuilder = new StringBuilder();
+        reportBuilder.append("Memory Service Report:\n");
+        reportBuilder.append("Total RAM: ").append(memory.getTotal() / (1024 * 1024 * 1024)).append(" GB\n");
+        reportBuilder.append("Available RAM: ").append(memory.getAvailable() / (1024 * 1024 * 1024)).append(" GB\n");
+        reportBuilder.append("Used RAM: ").append((memory.getTotal() - memory.getAvailable()) / (1024 * 1024 * 1024)).append(" GB\n");
+        reportBuilder.append("RAM Usage: ").append(String.format("%.2f %%\n", getRamUsageInPercents()));
+
+        return reportBuilder.toString();
     }
 }

@@ -2,10 +2,11 @@ package pl.lodz.uni.core.service;
 
 import oshi.SystemInfo;
 import oshi.hardware.PowerSource;
+import pl.lodz.uni.core.Reporting;
 
 import java.util.List;
 
-public class BatteryService implements IBatteryService {
+public class BatteryService implements IBatteryService, Reporting {
 
     private final SystemInfo systemInfo;
 
@@ -31,6 +32,18 @@ public class BatteryService implements IBatteryService {
         int design = battery.getDesignCapacity();
         int currentCapacity = battery.getMaxCapacity();
         return ((double) currentCapacity / (double) design) * 100.0;
+    }
+
+    @Override
+    public String report() {
+        PowerSource battery = systemInfo.getHardware().getPowerSources().get(0);
+        StringBuilder reportBuilder = new StringBuilder();
+        reportBuilder.append("Battery Report:\n");
+        reportBuilder.append(String.format("Remaining Capacity: %.2f%%\n", getRemainingCapacityPercent()));
+        reportBuilder.append(String.format("Health: %.2f%%\n", getHealthPercent()));
+        reportBuilder.append(String.format("Factory Capacity: %d mWh\n", battery.getDesignCapacity()));
+        reportBuilder.append(String.format("Current Capacity: %d mWh\n", battery.getMaxCapacity()));
+        return reportBuilder.toString();
     }
 }
 

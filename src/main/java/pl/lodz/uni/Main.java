@@ -2,6 +2,7 @@ package pl.lodz.uni;
 
 import javax.swing.*;
 
+import pl.lodz.uni.core.BatteryUpdateController;
 import pl.lodz.uni.core.ProgressPresenter;
 import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.core.UpdateController;
@@ -61,6 +62,12 @@ public class Main {
             for (ProgressPresenter fanPresenter : fanPanels) {
                 mainPanel.add((RangePanel) fanPresenter);
             }
+
+            IBatteryService batteryService = new BatteryService();
+            BatteryUpdateController batteryController = new BatteryUpdateController(batteryService);
+            ProgressPresenter batteryPanel = new RangePanel();
+            mainPanel.add((RangePanel) batteryPanel);
+            batteryController.notify(1000, batteryPanel);
 
             // Adjust window size and make it visible
             window.pack();

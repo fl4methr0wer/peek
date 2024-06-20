@@ -3,6 +3,8 @@
 ## Overview
 peek is a minimalist Java Swing application that monitors various system components in real-time.
 
+![Screenshot](src/main/resources/screenshot.png)
+
 ## Features
 - CPU Usage Monitoring
 - CPU Temperature Monitoring

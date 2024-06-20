@@ -1,4 +1,4 @@
-package pl.lodz.uni.core;
+package pl.lodz.uni.core.controller;
 
 public interface Presenter {
     void setName(String name);

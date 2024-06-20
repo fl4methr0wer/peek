@@ -2,7 +2,7 @@ package pl.lodz.uni.core.service;
 
 import oshi.SystemInfo;
 import oshi.hardware.PowerSource;
-import pl.lodz.uni.core.Reporter;
+import pl.lodz.uni.core.controller.Reporter;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package pl.lodz.uni.core.controller;
 
-import pl.lodz.uni.core.Presenter;
 import pl.lodz.uni.core.service.IFanService;
 
 import java.util.ArrayList;

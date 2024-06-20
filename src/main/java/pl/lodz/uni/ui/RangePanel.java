@@ -1,6 +1,6 @@
 package pl.lodz.uni.ui;
 
-import pl.lodz.uni.core.Presenter;
+import pl.lodz.uni.core.controller.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +18,6 @@ public class RangePanel extends JPanel implements Presenter {
     private void initComponents() {
         setLayout(new GridBagLayout());
 
-        // Name label
         nameLabel = new JLabel("Name:");
         GridBagConstraints gbcNameLabel = new GridBagConstraints();
         gbcNameLabel.anchor = GridBagConstraints.WEST;
@@ -27,7 +26,6 @@ public class RangePanel extends JPanel implements Presenter {
         gbcNameLabel.gridy = 0;
         add(nameLabel, gbcNameLabel);
 
-        // Value label
         valueLabel = new JLabel("Value:");
         GridBagConstraints gbcValueLabel = new GridBagConstraints();
         gbcValueLabel.anchor = GridBagConstraints.WEST;
@@ -36,10 +34,9 @@ public class RangePanel extends JPanel implements Presenter {
         gbcValueLabel.gridy = 0;
         add(valueLabel, gbcValueLabel);
 
-        // Progress bar without showing values
         progressBar = new JProgressBar();
         progressBar.setMaximum(100);
-        progressBar.setStringPainted(false); // Disable showing values
+        progressBar.setStringPainted(false); // disable % values on bar
         progressBar.setPreferredSize(new Dimension(200, 20)); // Fixed width
         GridBagConstraints gbcProgressBar = new GridBagConstraints();
         gbcProgressBar.fill = GridBagConstraints.HORIZONTAL;

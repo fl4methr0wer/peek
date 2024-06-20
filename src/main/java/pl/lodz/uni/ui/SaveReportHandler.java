@@ -1,8 +1,7 @@
 package pl.lodz.uni.ui;
 
-
 import pl.lodz.uni.core.FileReportLogger;
-import pl.lodz.uni.core.Reporter;
+import pl.lodz.uni.core.controller.Reporter;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

@@ -3,7 +3,6 @@ package pl.lodz.uni;
 import javax.swing.*;
 import javax.swing.Timer;
 
-import pl.lodz.uni.core.*;
 import pl.lodz.uni.core.controller.*;
 import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.ui.RangePanel;

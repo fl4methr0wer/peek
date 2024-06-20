@@ -1,12 +1,14 @@
 package pl.lodz.uni.core;
 
+import pl.lodz.uni.core.controller.Reporter;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class FileReportLogger implements ReportLogger {
+public class FileReportLogger implements ReportReceiver {
 
     private final String filePath;
 

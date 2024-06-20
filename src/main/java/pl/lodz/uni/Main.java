@@ -1,20 +1,18 @@
 package pl.lodz.uni;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.Timer;
 
 import pl.lodz.uni.core.*;
 import pl.lodz.uni.core.controller.*;
 import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.ui.RangePanel;
+import pl.lodz.uni.ui.SaveReportHandler;
 import pl.lodz.uni.ui.Window;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.io.File;
 
 public class Main {
     private static JFrame window;
@@ -23,9 +21,36 @@ public class Main {
     private static IFanService fanService;
     private static IMemoryService memoryService;
     private static IBatteryService batteryService;
-    private static List<Reporter> logReporters = new ArrayList<>();
+    private static SaveReportHandler reportHandler;
     private static NotifierAggregate notifierAggregate = new NotifierAggregate();
     private static Timer timer;
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            configureWindow();
+            configureMainPanel();
+            configureUpdateTimer();
+            configureServices();
+            configureLogReporter();
+
+            // Create update notifiers and UI panels
+            createProcessorTempNotifierAndUIPresenter();
+            createProcessorUsageNotifierAndUIPresenter();
+            createMemoryNotifierAndUIPresenter();
+            createFansNotifierAndUIPresenter();
+            createBatteryNotifierAndUIPresenter();
+
+            // Save reports button
+            if (reportHandler != null) {
+                JButton saveButton = new JButton("Save Reports");
+                saveButton.addActionListener(reportHandler::handleSaveReports);
+                mainPanel.add(saveButton);
+            }
+
+            window.pack();
+            window.setVisible(true);
+        });
+    }
 
     private static void configureWindow() {
         window = new Window("System Usage");
@@ -40,75 +65,24 @@ public class Main {
         window.add(scrollPane);
     }
 
+    private static void configureUpdateTimer() {
+        timer = new Timer(1000, (e) -> notifierAggregate.notifyAllPresenters());
+        timer.start();
+    }
+
     private static void configureServices() {
         processorService = new ProcessorService();
-        logReporters.add((Reporter) processorService);
-
         fanService = new FanService();
-        logReporters.add((Reporter) fanService);
-
         memoryService = new MemoryService();
-        logReporters.add((Reporter) memoryService);
-
         batteryService = new BatteryService();
-        logReporters.add((Reporter) batteryService);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            configureWindow();
-            configureMainPanel();
-            configureServices();
-
-            // Create update notifiers and UI panels
-            createProcessorTempNotifierAndUIPresenter();
-            createProcessorUsageNotifierAndUIPresenter();
-            createMemoryNotifierAndUIPresenter();
-            createFansNotifierAndUIPresenter();
-            createBatteryNotifierAndUIPresenter();
-
-            // Save reports button
-            JButton saveButton = new JButton("Save Reports");
-            saveButton.addActionListener(Main::handleSaveReports);
-            mainPanel.add(saveButton);
-
-            // configure Timer notifying Presenters
-            timer = new Timer(1000, (e) -> notifierAggregate.notifyAllPresenters());
-            timer.start();
-
-            window.pack();
-            window.setVisible(true);
-        });
-    }
-
-    private static void handleSaveReports(ActionEvent e) {
-        timer.stop();
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save Report");
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setAcceptAllFileFilterUsed(false);
-
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
-        fileChooser.addChoosableFileFilter(filter);
-
-        int userSelection = fileChooser.showSaveDialog(window);
-        if (userSelection != JFileChooser.APPROVE_OPTION) {
-            timer.restart();
-            return;
-        }
-
-        File fileToSave = fileChooser.getSelectedFile();
-        String filePath = fileToSave.getAbsolutePath();
-
-        FileReportLogger reportLogger = new FileReportLogger(filePath);
-        reportLogger.accept(logReporters);
-
-        // Optionally show a message dialog after saving
-        JOptionPane.showMessageDialog(window,
-                "Report saved to " + filePath,
-                "Reports saved",
-                JOptionPane.INFORMATION_MESSAGE);
-        timer.restart();
+    private static void configureLogReporter() {
+        reportHandler = new SaveReportHandler(window);
+        reportHandler.registerReporter((Reporter) processorService);
+        reportHandler.registerReporter((Reporter) fanService);
+        reportHandler.registerReporter((Reporter) memoryService);
+        reportHandler.registerReporter((Reporter) batteryService);
     }
 
     private static void createProcessorTempNotifierAndUIPresenter() {

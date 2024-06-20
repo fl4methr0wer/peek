@@ -1,11 +1,11 @@
 package pl.lodz.uni.ui;
 
-import pl.lodz.uni.core.ProgressPresenter;
+import pl.lodz.uni.core.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class RangePanel extends JPanel implements ProgressPresenter {
+public class RangePanel extends JPanel implements Presenter {
 
     private JLabel nameLabel;
     private JLabel valueLabel;

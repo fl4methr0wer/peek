@@ -8,6 +8,7 @@ import pl.lodz.uni.core.*;
 import pl.lodz.uni.core.controller.*;
 import pl.lodz.uni.core.service.*;
 import pl.lodz.uni.ui.RangePanel;
+import pl.lodz.uni.ui.Window;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class Main {
     private static Timer timer;
 
     private static void configureWindow() {
-        window = new JFrame("System Usage");
+        window = new Window("System Usage");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -59,58 +60,19 @@ public class Main {
             configureMainPanel();
             configureServices();
 
-            // CPU
-            ProcessorUpdateController processorUpdateController = new ProcessorUpdateController(processorService);
-            RangePanel cpuPercentagePanel = new RangePanel();
-            mainPanel.add(cpuPercentagePanel);
-            processorUpdateController.notifyCPUUsage(1000, cpuPercentagePanel);
-
-            RangePanel cpuTempPanel = new RangePanel();
-            mainPanel.add(cpuTempPanel);
-            processorUpdateController.notifyCPUUsage(1000, cpuTempPanel);
-
-
-            // RAM
-            MemoryUpdateController memoryUpdateController = new MemoryUpdateController(memoryService);
-
-            RangePanel memoryPanel = new RangePanel();
-            memoryPanel.setName("RAM");
-            mainPanel.add(memoryPanel);
-
-            memoryUpdateController.registerProgressPresenter(memoryPanel);
-            notifierAggregate.add(memoryUpdateController);
-
-            // FANS
-            FanUpdateController fanUpdateController = new FanUpdateController(fanService);
-
-            int anountOfFans = fanService.getAmountOfFans();
-            List<ProgressPresenter> fanPanels = new ArrayList<>();
-            for (int i = 0; i < anountOfFans; i++) {
-                RangePanel fanPanel = new RangePanel();
-                fanUpdateController.registerProgressPresenter(fanPanel);
-                fanPanels.add(fanPanel);
-            }
-
-            notifierAggregate.add(fanUpdateController);
-
-            for (ProgressPresenter fanPresenter : fanPanels) {
-                mainPanel.add((RangePanel) fanPresenter);
-            }
-
-            // BATTERY
-            BatteryUpdateController batteryController = new BatteryUpdateController(batteryService);
-            ProgressPresenter batteryPanel = new RangePanel();
-            mainPanel.add((RangePanel) batteryPanel);
-            notifierAggregate.add(batteryController);
-
-            batteryController.registerProgressPresenter(batteryPanel);
-            notifierAggregate.add(batteryController);
+            // Create update notifiers and UI panels
+            createProcessorTempNotifierAndUIPresenter();
+            createProcessorUsageNotifierAndUIPresenter();
+            createMemoryNotifierAndUIPresenter();
+            createFansNotifierAndUIPresenter();
+            createBatteryNotifierAndUIPresenter();
 
             // Save reports button
             JButton saveButton = new JButton("Save Reports");
             saveButton.addActionListener(Main::handleSaveReports);
             mainPanel.add(saveButton);
 
+            // configure Timer notifying Presenters
             timer = new Timer(1000, (e) -> notifierAggregate.notifyAllPresenters());
             timer.start();
 
@@ -147,5 +109,57 @@ public class Main {
                 "Reports saved",
                 JOptionPane.INFORMATION_MESSAGE);
         timer.restart();
+    }
+
+    private static void createProcessorTempNotifierAndUIPresenter() {
+        RangePanel cpuTempPanel = new RangePanel();
+        mainPanel.add(cpuTempPanel);
+
+        ProcessorTempNotifier processorTempNotifier = new ProcessorTempNotifier(processorService);
+        processorTempNotifier.registerPresenter(cpuTempPanel);
+        notifierAggregate.add(processorTempNotifier);
+    }
+
+    private static void createProcessorUsageNotifierAndUIPresenter() {
+        RangePanel cpuPercentagePanel = new RangePanel();
+        mainPanel.add(cpuPercentagePanel);
+
+        ProcessorUsageNotifier processorUsageNotifier = new ProcessorUsageNotifier(processorService);
+        processorUsageNotifier.registerPresenter(cpuPercentagePanel);
+        notifierAggregate.add(processorUsageNotifier);
+    }
+
+    private static void createMemoryNotifierAndUIPresenter() {
+        RangePanel memoryPanel = new RangePanel();
+        mainPanel.add(memoryPanel);
+
+        MemoryUpdateNotifier memoryUpdateNotifier = new MemoryUpdateNotifier(memoryService);
+        memoryUpdateNotifier.registerPresenter(memoryPanel);
+        notifierAggregate.add(memoryUpdateNotifier);
+    }
+
+    private static void createFansNotifierAndUIPresenter() {
+        List<Presenter> fanPanels = new ArrayList<>();
+
+        FanUpdateNotifier fanUpdateNotifier = new FanUpdateNotifier(fanService);
+        for (int i = 0; i < fanService.getAmountOfFans(); i++) {
+            RangePanel fanPanel = new RangePanel();
+            fanUpdateNotifier.registerPresenter(fanPanel);
+            fanPanels.add(fanPanel);
+        }
+
+        for (Presenter fanPresenter : fanPanels) {
+            mainPanel.add((RangePanel) fanPresenter);
+        }
+        notifierAggregate.add(fanUpdateNotifier);
+    }
+
+    private static void createBatteryNotifierAndUIPresenter() {
+        Presenter batteryPanel = new RangePanel();
+        mainPanel.add((RangePanel) batteryPanel);
+
+        BatteryUpdateNotifier batteryController = new BatteryUpdateNotifier(batteryService);
+        batteryController.registerPresenter(batteryPanel);
+        notifierAggregate.add(batteryController);
     }
 }

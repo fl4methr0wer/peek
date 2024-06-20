@@ -1,26 +1,27 @@
 package pl.lodz.uni.core.controller;
 
-import pl.lodz.uni.core.ProgressPresenter;
+import pl.lodz.uni.core.Presenter;
 import pl.lodz.uni.core.service.IMemoryService;
 
-public class MemoryUpdateController implements Notifier {
+public class MemoryUpdateNotifier implements Notifier {
 
     private final IMemoryService service;
-    private ProgressPresenter presenter;
+    private Presenter presenter;
 
-    public MemoryUpdateController(IMemoryService service) {
+    public MemoryUpdateNotifier(IMemoryService service) {
         this.service = service;
     }
 
     @Override
-    public void registerProgressPresenter(ProgressPresenter progressPresenter) {
-        this.presenter = progressPresenter;
+    public void registerPresenter(Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
     public void notifyPresenter() {
-        if (presenter == null)
-            return;
+        if (presenter == null) return;
+
+        presenter.setName("RAM:");
         double percents = service.getRamUsageInPercents();
         String percentsStringRepresentation = String.format("%.2f %%", percents);
         presenter.setValue(percentsStringRepresentation);

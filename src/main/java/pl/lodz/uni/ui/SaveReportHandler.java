@@ -1,6 +1,7 @@
 package pl.lodz.uni.ui;
 
 import pl.lodz.uni.core.FileReportLogger;
+import pl.lodz.uni.core.ReportReceiver;
 import pl.lodz.uni.core.controller.Reporter;
 
 import javax.swing.*;
@@ -26,11 +27,11 @@ public class SaveReportHandler {
     public void handleSaveReports(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Report");
+
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setAcceptAllFileFilterUsed(false);
-
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
-        fileChooser.addChoosableFileFilter(filter);
+        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Text Files", "txt");
+        fileChooser.addChoosableFileFilter(fileFilter);
 
         int userSelection = fileChooser.showSaveDialog(window);
         if (userSelection != JFileChooser.APPROVE_OPTION) {
@@ -40,7 +41,7 @@ public class SaveReportHandler {
         File fileToSave = fileChooser.getSelectedFile();
         String filePath = fileToSave.getAbsolutePath();
 
-        FileReportLogger reportLogger = new FileReportLogger(filePath);
+        ReportReceiver reportLogger = new FileReportLogger(filePath);
         reportLogger.accept(logReporters);
 
         JOptionPane.showMessageDialog(window,
